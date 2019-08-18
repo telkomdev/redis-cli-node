@@ -11,30 +11,53 @@ const main = () => {
 		Redis CLI Node
 		
 		Usage:
-		run | run redis-cli-node
-		-h -help | show help
-		-version | show version
+		run: redis-cli-node
+
+		Flag:
+		--help | show help
+		--version | show version
 	`;
+
+	var options = {};
 	
 	if (args.length <= 0) {
-		console.log(help);
+		console.log(index.giveColor(help, 'cyan'));
 		process.exit(0);
 	}
 
-	if (args[0] === '-h' || args[0] === '-help') {
-		console.log(help);
+	else if (args[0] === '--help') {
+		console.log(index.giveColor(help, 'cyan'));
 		process.exit(0);
 	}
 
-	if (args[0] === '-version') {
+	else if (args[0] === '--version') {
 		console.log(index.giveColor(`redis-cli-node version ${VERSION}`, 'red'));
 		process.exit(0);
 	}
 
-	if (args[0] === 'run') {
-		const redis = new index.Redis({argOne: args[0]});
-		redis.exec();
+	else if (args[0] === '-h' && args[2] === '-p') {
+		options.host = args[1];
+		if (isNaN(args[3])) {
+			console.log(index.giveColor(`invalid port number ${args[3]}`, 'red'));
+			process.exit(0);
+		}
+
+		options.port = parseInt(args[3]);
+
+		if (args.length > 5) {
+			if (args[4] === '-a') {
+				options.password = args[5];
+			}
+		} 
 	}
+	
+	else {
+		console.log(index.giveColor(help, 'cyan'));
+		process.exit(0);
+	}
+
+	const redis = new index.Redis(options);
+	redis.start();
 		
 };
 
