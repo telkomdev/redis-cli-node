@@ -1,0 +1,17 @@
+{
+  "name": "redis-cli-node",
+  "version": "1.0.0",
+  "author": "wuriyanto <wuriyanto.com>",
+  "license": "ISC",
+  "description": "Redis CLI written in Nodejs",
+  "keywords":[
+    "redis",
+    "socket",
+    "cli"
+  ],
+  "bin": "./bin/redis-cli-node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
