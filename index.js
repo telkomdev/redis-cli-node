@@ -6,9 +6,14 @@ const giveColor = require('./colors');
 
 const rl = readline.createInterface(process.stdin, process.stdout);
 
-const prompt = (question, handler) => {
+const prompt = (client, question, handler) => {
     rl.question(question, (answer) => {
-        handler(answer);
+        if (handler(answer) !== false) {
+            prompt(client, question, handler)
+        } else {
+            client.destroy();
+            rl.close();
+        }
     });
 };
 
@@ -51,6 +56,15 @@ Redis.prototype.start = function() {
         if (this.password != '') {
             client.write(`AUTH ${this.password}\r\n`);
         }
+
+        prompt(client, 'rednode> ', (input) => {
+            if (input.trim() !== 'exit'){
+                client.write(`${input}\r\n`);
+                return true;
+            } else {
+                return false;
+            }
+        });
     };
 
     client.connect({host: this.host, port: this.port}, handleCommand);
@@ -58,20 +72,29 @@ Redis.prototype.start = function() {
     client.setEncoding('utf8');
 
     client.on('data', (data) => {
-        console.log(giveColor(`rednode> ${data}`, 'cyan'));
+        console.log(giveColor(data, 'cyan'));
+        prompt(client, 'rednode> ', (input) => {
+            if (input.trim() !== 'exit'){
+                client.write(`${input}\r\n`);
+                return true;
+            } else {
+                return false;
+            }
+        });
     });
 
     client.on('end', () => {
-        console.log('Client socket disconnect. ');
+        console.log(giveColor('connection disconnect', 'red'));
     });
 
     client.on('timeout', () => {
-        console.log('Client connection timeout. ');
-        client.end('bye');
+        console.log(giveColor('connection timeout', 'red'));
+        process.exit(1);
     });
 
     client.on('error', (err) => {
         console.log(giveColor(`connection error ${err.message}`, 'red'));
+        process.exit(1);
     });
 };
 
