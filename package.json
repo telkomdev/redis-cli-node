@@ -4,7 +4,7 @@
   "author": "wuriyanto <wuriyanto.com>",
   "license": "ISC",
   "description": "Redis CLI written in Nodejs",
-  "keywords":[
+  "keywords": [
     "redis",
     "socket",
     "cli"
