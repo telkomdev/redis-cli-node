@@ -11,7 +11,7 @@ const main = () => {
 		Redis CLI Node
 		
 		Usage:
-		run: redis-cli-node
+		$ redis-cli-node -h localhost -p 6379
 
 		Flag:
 		--help | show help
