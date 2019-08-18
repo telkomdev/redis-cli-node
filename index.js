@@ -3,7 +3,6 @@
 const net = require('net');
 const readline = require('readline');
 const giveColor = require('./colors');
-const menuAction = require('./menu');
 
 const rl = readline.createInterface(process.stdin, process.stdout);
 
@@ -14,40 +13,52 @@ const prompt = (question, handler) => {
 };
 
 function Redis(options) {
+    this.client = new net.Socket();
+    // default options
+    this.host = '127.0.0.1';
+    this.port = 6379;
+    this.password = '';
+
     if (options.host) {
         this.host = options.host;
-    } else {
-        this.host = '127.0.0.1';
     }
 
     if (options.port) {
         this.port = options.port
-    } else {
-        this.port = 6379;
     }
 
     if (options.password) {
         this.password = options.password
-    } else {
-        this.password = '';
     }
-
-    console.log(options);
 }
 
+// const receiveCommand = () => {
+//     prompt('rednode> ', (input) => {
+//         if (input in menus) {
+//             menus[input].command();
+//         } else {
+//             menu();
+//         }
+//     });
+// };
+
 Redis.prototype.start = function() {
-    const client = new net.Socket();
-    client.connect({host: this.host, port: this.port}, () => {
+
+    const client = this.client;
+
+    const handleCommand = () => {
         console.log('connected..');
         if (this.password != '') {
             client.write(`AUTH ${this.password}\r\n`);
         }
-    });
+    };
+
+    client.connect({host: this.host, port: this.port}, handleCommand);
     
     client.setEncoding('utf8');
 
     client.on('data', (data) => {
-        console.log(giveColor(`rednode> ${data}`, 'red'));
+        console.log(giveColor(`rednode> ${data}`, 'cyan'));
     });
 
     client.on('end', () => {
